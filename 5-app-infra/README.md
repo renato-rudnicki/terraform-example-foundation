@@ -22,7 +22,9 @@ This Compute Engine instance will be created using the base network created duri
 
 1. Clone repo `gcloud source repos clone gcp-policies --project=prj-bu1-c-infra-pipeline-<random>`. (this is from the terraform output from the previous section, run `terraform output cloudbuild_project_id` in the `4-projects/business_unit_1/shared` folder).
 1. Navigate into the repo `cd gcp-policies`.
-1. Copy contents of policy-library to new repo `cp -RT ../terraform-example-foundation/policy-library/ .` (modify accordingly based on your current directory).
+1. Copy contents of policy-library to new repo:
+   1. If you are running Linux use: `cp -RT ../terraform-example-foundation/policy-library/ .` (modify accordingly based on your current directory).
+   1. If you are running Mac OS use: `cp -pR ../terraform-example-foundation/policy-library/* .` (modify accordingly based on your current directory).
 1. Commit changes with `git add .` and `git commit -m 'Your message'`.
 1. Push your master branch to the new repo `git push --set-upstream origin master`.
 1. Navigate out of the repo `cd ..`.
