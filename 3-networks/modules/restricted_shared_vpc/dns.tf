@@ -57,7 +57,7 @@ resource "google_dns_policy" "default_policy" {
 
 module "restricted_googleapis" {
   source      = "terraform-google-modules/cloud-dns/google"
-  version     = "~> 3.0"
+  version     = "~> 4.2"
   project_id  = var.project_id
   type        = "private"
   name        = "dz-${var.environment_code}-shared-restricted-apis"
@@ -90,7 +90,7 @@ module "restricted_googleapis" {
 
 module "restricted_gcr" {
   source      = "terraform-google-modules/cloud-dns/google"
-  version     = "~> 3.0"
+  version     = "~> 4.2"
   project_id  = var.project_id
   type        = "private"
   name        = "dz-${var.environment_code}-shared-restricted-gcr"
@@ -123,7 +123,7 @@ module "restricted_gcr" {
 
 module "restricted_pkg_dev" {
   source      = "terraform-google-modules/cloud-dns/google"
-  version     = "~> 3.0"
+  version     = "~> 4.2"
   project_id  = var.project_id
   type        = "private"
   name        = "dz-${var.environment_code}-shared-restricted-pkg-dev"
@@ -155,7 +155,7 @@ module "restricted_pkg_dev" {
 *****************************************/
 module "peering_zone" {
   source      = "terraform-google-modules/cloud-dns/google"
-  version     = "~> 3.0"
+  version     = "~> 4.2"
   project_id  = var.project_id
   type        = "peering"
   name        = "dz-${var.environment_code}-shared-restricted-to-dns-hub"
