@@ -56,7 +56,7 @@ resource "google_dns_policy" "default_policy" {
 
 module "private_googleapis" {
   source      = "terraform-google-modules/cloud-dns/google"
-  version     = "~> 3.1"
+  version     = "~> 4.2"
   project_id  = var.project_id
   type        = "private"
   name        = "dz-${var.environment_code}-shared-base-apis"
@@ -89,7 +89,7 @@ module "private_googleapis" {
 
 module "base_gcr" {
   source      = "terraform-google-modules/cloud-dns/google"
-  version     = "~> 3.1"
+  version     = "~> 4.2"
   project_id  = var.project_id
   type        = "private"
   name        = "dz-${var.environment_code}-shared-base-gcr"
@@ -122,7 +122,7 @@ module "base_gcr" {
 
 module "base_pkg_dev" {
   source      = "terraform-google-modules/cloud-dns/google"
-  version     = "~> 3.1"
+  version     = "~> 4.2"
   project_id  = var.project_id
   type        = "private"
   name        = "dz-${var.environment_code}-shared-base-pkg-dev"
@@ -154,7 +154,7 @@ module "base_pkg_dev" {
 *****************************************/
 module "peering_zone" {
   source      = "terraform-google-modules/cloud-dns/google"
-  version     = "~> 3.1"
+  version     = "~> 4.2"
   project_id  = var.project_id
   type        = "peering"
   name        = "dz-${var.environment_code}-shared-base-to-dns-hub"
