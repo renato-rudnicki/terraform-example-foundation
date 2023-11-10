@@ -1,5 +1,5 @@
 /**
- * Copyright 2023 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,17 @@
  * limitations under the License.
  */
 
-terraform {
-  required_providers {
-    gitlab = {
-      source  = "gitlabhq/gitlab"
-      version = "~> 16.2.0"
-    }
-  }
+output "mig_instance_group" {
+  description = "The instance group url of the created MIG"
+  value       = module.mig.instance_group
 }
 
-variable "gitlab_token" {
-  type = string
+output "mig_instance_template" {
+  description = "The name of the MIG Instance Template"
+  value       = module.mig_template.name
 }
 
-provider "gitlab" {
-  token = var.gitlab_token
-}
-
-provider "null" {}
-
-resource "null_resource" "gcloud_auth_list" {
-  provisioner "local-exec" {
-    command = "gcloud auth list"
-  }
+output "service_account" {
+  description = "Service account email for GCE"
+  value       = local.service_account
 }

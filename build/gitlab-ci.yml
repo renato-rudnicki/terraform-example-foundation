@@ -17,15 +17,41 @@ stages:
   - validate
   - apply
 
+build-image:
+  stage: build
+  tags:
+    - gl_runner
+  image:
+    name: docker:stable
+  services:
+   - name: docker:dind
+     alias: dockerhost
+
+  variables:
+    DOCKER_HOST: tcp://dockerhost:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+
+  script:
+    - echo $CI_REGISTRY_PASSWORD | docker login -u  $CI_REGISTRY_USER $CI_REGISTRY --password-stdin
+    - docker build -t $CI_REGISTRY_IMAGE/terraform-gcloud:latest .
+    - docker push $CI_REGISTRY_IMAGE/terraform-gcloud:latest
+    - docker logout
+
+  only:
+    - image
+
 # All branches need to be protected, otherwise the value of environment variables won't be read.
+# disable -> project -> settings -> cicd -> token access -> limit access to this project
 
 image:
-  name: $CI_REGISTRY/terraform-gcloud:latest
+  name: registry.gitlab.com/GITLAB-ACCOUNT/GITLAB-REPOSITORY/terraform-gcloud:latest
   entrypoint: [""]
-
 
 terraform-plan:
   stage: validate
+  tags:
+    - gl_runner
   id_tokens:
     GITLAB_OIDC_TOKEN:
       aud: "//iam.googleapis.com/${WIF_PROVIDER_NAME}"
@@ -36,11 +62,28 @@ terraform-plan:
     - gcloud config set project "$PROJECT_ID"
     - bash tf-wrapper.sh plan_validate_all $CI_COMMIT_REF_NAME $CI_PROJECT_DIR/policy-library $PROJECT_ID "FILESYSTEM"
 
+terraform-plan:
+  stage: validate
+  tags:
+    - gl_runner
+  id_tokens:
+    GITLAB_OIDC_TOKEN:
+      aud: "//iam.googleapis.com/${WIF_PROVIDER_NAME}"
+  variables:
+    GOOGLE_IMPERSONATE_SERVICE_ACCOUNT: "$SERVICE_ACCOUNT_EMAIL"
+
+  script:
+    - bash run_gcp_auth.sh "${GITLAB_OIDC_TOKEN}" "${WIF_PROVIDER_NAME}" "${SERVICE_ACCOUNT_EMAIL}" `pwd`
+    - gcloud config set project "$PROJECT_ID"
+    - bash tf-wrapper.sh plan_validate_all $CI_COMMIT_REF_NAME $CI_PROJECT_DIR/policy-library $PROJECT_ID "FILESYSTEM"
+
   only:
     - plan
 
 terraform-apply:
   stage: apply
+  tags:
+    - gl_runner
   id_tokens:
     GITLAB_OIDC_TOKEN:
       aud: "//iam.googleapis.com/${WIF_PROVIDER_NAME}"
@@ -58,3 +101,5 @@ terraform-apply:
     - development
     - production
     - non-production
+  when: manual
+
