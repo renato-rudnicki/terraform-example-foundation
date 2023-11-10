@@ -15,7 +15,7 @@
  */
 
 locals {
-  service_account = var.service_account == "" ? google_service_account.runner_service_account[0].email : var.service_account
+  service_account         = var.service_account == "" ? google_service_account.runner_service_account[0].email : var.service_account
   private_googleapis_cidr = module.private_service_connect.private_service_connect_ip
 }
 

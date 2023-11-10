@@ -140,11 +140,11 @@ variable "project_id" {
 }
 
 variable "private_service_connect_ip" {
-  type = string
+  type    = string
   default = "10.10.64.5"
 }
 
 variable "firewall_enable_logging" {
-  type = bool
+  type    = bool
   default = true
 }

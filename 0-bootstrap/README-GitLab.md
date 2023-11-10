@@ -128,6 +128,9 @@ You must have [SSH keys](https://docs.gitlab.com/ee/user/ssh.html) configured wi
 
 1. Update the file `terraform.tfvars` with values from your Google Cloud environment
 1. Update the file `terraform.tfvars` with values from your GitLab projects
+
+1. In case you want to use a [Gitlab Shared Runner](https://docs.gitlab.com/runner/) you need to change the variable `shared_runners` to `true` and then skip to step 17. If you are using a `Gitlab local runner` you can ignore this step.
+
 1. To prevent saving the `gitlab_token` in plain text in the `terraform.tfvars` file,
 export the GitLab personal or group access token as an environment variable:
 
@@ -219,6 +222,8 @@ export the GitLab personal or group access token as an environment variable:
    ```
 
 ### Build CI/CD runner image
+
+**Note:** Only follow these instructions if you are usin a `Gitlab local runner`, otherwise you can skip to `Deploying step 1-org`.
 
 1. Clone the private project you created to host the docker configuration for the CI/CD runner at the same level of the `terraform-example-foundation` folder.
 You must have [SSH keys](https://docs.gitlab.com/ee/user/ssh.html) configured with GitLab.

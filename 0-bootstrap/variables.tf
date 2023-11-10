@@ -316,3 +316,10 @@ variable "initial_group_config" {
 #   description = "Name for the subnet"
 #   default     = "gl-runner-subnet"
 # }
+
+#variable "shared_runner" {
+#  description = "Indicates if a Gitlab shared runner should be used instead of a local runner."
+#  type        = bool
+#  default     = false 
+#}
+

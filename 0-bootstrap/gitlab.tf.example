@@ -128,6 +128,7 @@ module "cicd_project_wif_iam_member" {
 
 module "gitlab_runner" {
   source = "./modules/gitlab-runner"
+  count = var.shared_runner ? 0 : 1
 
   project_id = local.cicd_project_id
   #service_account = google_service_account.terraform-env-sa["bootstrap"].email
