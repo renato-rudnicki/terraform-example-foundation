@@ -223,8 +223,6 @@ export the GitLab personal or group access token as an environment variable:
 
 ### Build CI/CD runner image
 
-**Note:** Only follow these instructions if you are usin a `Gitlab local runner`, otherwise you can skip to `Deploying step 1-org`.
-
 1. Clone the private project you created to host the docker configuration for the CI/CD runner at the same level of the `terraform-example-foundation` folder.
 You must have [SSH keys](https://docs.gitlab.com/ee/user/ssh.html) configured with GitLab.
 
@@ -251,32 +249,28 @@ You must have [SSH keys](https://docs.gitlab.com/ee/user/ssh.html) configured wi
    cp ../terraform-example-foundation/build/gitlab-ci.yml ./.gitlab-ci.yml
    cp ../terraform-example-foundation/0-bootstrap/Dockerfile ./Dockerfile
    ```
-1. Create a runner for your GitLab CICD Repository in [Settings -> CICD -> Runners](https://gitlab.com/GITLAB-ACCOUNT/BOOTSTRAP-REPOSITORY/-/settings/ci_cd) called `gl_runner` and also set the tag name for `gl_runner`.
 
-1. To execute the next step, you need to allow the SSH access for your Gitlab instance created in the CICD Project from 0-bootstrap step running the command below:
+**Note:** Only follow the 3 next steps if you are usin a `Gitlab local runner`.
+
+1. **Local Runner only:** Create a runner for your GitLab CICD Repository in [Settings -> CICD -> Runners](https://gitlab.com/GITLAB-ACCOUNT/BOOTSTRAP-REPOSITORY/-/settings/ci_cd) called `gl_runner` and also set the tag name for `gl_runner`.
+
+1. **Local Runner only:** To execute the next step, you need to allow the SSH access for your Gitlab instance created in the CICD Project from 0-bootstrap step running the command below:
 
 ```bash
 gcloud compute firewall-rules create allow-ssh --allow tcp:22 --network gl-runner-network --project <cicd_project_id>
 ```
 
-1. Once you have access to your GitLab runner instance, you need to register your runner in the GitLab using the command below. Remember to change the token `glrt-xxx` for the token generated in the GitLab interface.
+1. **Local Runner only:** Once you have access to your GitLab runner instance, you need to register your runner in the GitLab using the command below. Remember to change the token `glrt-xxx` for the token generated in the GitLab interface.
 
 ```bash
 sudo gitlab-runner register --non-interactive --url https://gitlab.com --name gl_runner --executor docker --docker-image docker:dind --docker-privileged=true --token glrt-xxx
 ```
 
-1. Edit the `./.gitlab-ci.yml` file and update the paramenter the following line:
+1. Execute the following commands to update Gitlab account and repository. Remember to change `YOUR-GITLAB-ACCOUNT` and `REPOSITORY-IMAGE` with the correct values used in your Gitlab.
 
 ```bash
-image:
-  name: registry.gitlab.com/GITLAB-ACCOUNT/UPDATE_ME/terraform-gcloud:latest
-```
-
-To:
-
-```bash
-image:
-  name: registry.gitlab.com/GITLAB-ACCOUNT/GITLAB-IMAGE_REPOSITORY/terraform-gcloud:latest
+   for i in `find -name 'backend.tf'`; do sed -i "s/GITLAB-ACCOUNT/YOUR-GITLAB-ACCOUNT/" $i; done
+   for i in `find -name 'backend.tf'`; do sed -i "s/GITLAB-REPOSITORY/REPOSITORY-IMAGE/" $i; done
 ```
 
 1. Save the CI/CD runner configuration to `gcp-cicd-runner` GitLab project:
