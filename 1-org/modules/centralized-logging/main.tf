@@ -17,7 +17,8 @@
 locals {
   value_first_resource  = values(var.resources)[0]
   logbucket_sink_member = { for k, v in var.resources : k => v if k != var.logging_project_key }
-  include_children      = (var.resource_type == "organization" || var.resource_type == "folder")
+  #include_children      = (var.resource_type == "organization" || var.resource_type == "folder")
+  include_children = var.resource_type == "organization" || var.resource_type == "folder" || var.resource_type == "billing_account"
 
   # Create an intermediate list with all resources X all destinations
   exports_list = flatten([
@@ -90,6 +91,59 @@ module "log_export" {
   include_children       = local.include_children
 }
 
+
+###################### billing account #################
+
+module "log_export_billing" {
+  source  = "terraform-google-modules/log-export/google"
+  version = "~> 7.4"
+
+  for_each = local.log_exports
+
+  destination_uri        = local.destination_uri_map[each.value.type]
+  filter                 = ""
+  #filter                 = each.value.options.logging_sink_filter
+  log_sink_name          = coalesce(each.value.options.logging_sink_name, local.logging_sink_name_map[each.value.type])
+  parent_resource_id     = each.value.res
+  parent_resource_type   = var.resource_type
+  unique_writer_identity = true
+  include_children       = local.include_children
+}
+
+# module "logs_export_billing" {
+#   ###source = "/home/renatojr/git/lab/project-sink/terraform-example-foundation/1-org/modules/centralized-logging"
+# source  = "terraform-google-modules/log-export/google"
+# version = "~> 7.4"
+
+#   #for_each = local.log_exports
+
+#   destination_uri        = local.destination_uri_map[each.value.type]
+#   #filter                 = each.value.options.logging_sink_filter
+#   filter                 = ""
+#   log_sink_name          = coalesce(each.value.options.logging_sink_name, local.logging_sink_name_map[each.value.type])
+#   parent_resource_id     = each.value.res
+#   parent_resource_type   = var.resource_type
+#   unique_writer_identity = true
+#   include_children       = local.include_children
+
+#   resources                      = local.parent_resources
+#   resource_type                  = local.parent_resource_type
+#   logging_destination_project_id = local.logging_destination_project_id
+
+#   billing_options = {
+#     name                       = "billing_account_sink"
+#     logging_sink_filter        = ""
+#     #log_bucket_id              = "project-sink-1127"
+#     #log_bucket_description     = "Project destination log bucket"
+#     #retention_days             = 33
+#     #location                   = "us-central1"
+#     #linked_dataset_id          = "ds_c_prj_logbkt_analytics"
+#     #linked_dataset_description = "Project destination logbucket BigQuery Dataset for Logbucket analytics"
+#   }
+# }
+
+########################################################
+
 #-------------------------#
 # Send logs to Log Bucket #
 #-------------------------#
@@ -97,7 +151,9 @@ module "destination_logbucket" {
   source  = "terraform-google-modules/log-export/google//modules/logbucket"
   version = "~> 7.7"
 
-  count = var.logbucket_options != null ? 1 : 0
+  #count = var.logbucket_options != null ? 1 : 0
+  count = var.logbucket_options != null && var.billing_account != null ? 1 : 0
+
 
   project_id                    = var.logging_destination_project_id
   name                          = coalesce(var.logbucket_options.name, local.logging_tgt_name.lbk)
@@ -131,7 +187,9 @@ module "destination_storage" {
   source  = "terraform-google-modules/log-export/google//modules/storage"
   version = "~> 7.4"
 
-  count = var.storage_options != null ? 1 : 0
+  #count = var.storage_options != null ? 1 : 0
+  count = var.storage_options != null && var.billing_account != null ? 1 : 0
+
 
   project_id                  = var.logging_destination_project_id
   storage_bucket_name         = coalesce(var.storage_options.storage_bucket_name, local.logging_tgt_name.sto)
@@ -166,7 +224,8 @@ module "destination_pubsub" {
   source  = "terraform-google-modules/log-export/google//modules/pubsub"
   version = "~> 7.4"
 
-  count = var.pubsub_options != null ? 1 : 0
+  #count = var.pubsub_options != null ? 1 : 0
+  count = var.pubsub_options != null && var.billing_account != null ? 1 : 0
 
   project_id               = var.logging_destination_project_id
   topic_name               = coalesce(var.pubsub_options.topic_name, local.logging_tgt_name.pub)
@@ -185,3 +244,48 @@ resource "google_pubsub_topic_iam_member" "pubsub_sink_member" {
   role    = "roles/pubsub.publisher"
   member  = module.log_export["${each.value}_pub"].writer_identity
 }
+
+################################
+#-----------------------------------------------------------#
+# Log Bucket Service account IAM membership billing account #
+#-----------------------------------------------------------#
+
+resource "google_project_iam_member" "billing_account_member_logbucket" {
+  project = var.logging_destination_project_id
+  role    = "roles/logging.configWriter"
+  member = module.log_export["${local.value_first_resource}_lbk"].writer_identity
+
+  depends_on = [
+     module.log_export_billing,
+     module.destination_logbucket
+  ]
+}
+
+#--------------------------------------------------------#
+# Storage Service account IAM membership billing account #
+#--------------------------------------------------------#
+resource "google_project_iam_member" "billing_account_member_storage" {
+  project = var.logging_destination_project_id
+  role    = "roles/logging.configWriter"
+  member = module.log_export["${local.value_first_resource}_sto"].writer_identity
+
+  depends_on = [
+     module.log_export_billing,
+     module.destination_storage
+  ]
+}
+
+#-------------------------------------------------------#
+# Pubsub Service account IAM membership billing account #
+#-------------------------------------------------------#
+resource "google_project_iam_member" "billing_account_member_pubsub" {
+  project = var.logging_destination_project_id
+  role    = "roles/logging.configWriter"
+  member = module.log_export["${local.value_first_resource}_pub"].writer_identity
+
+  depends_on = [
+     module.log_export_billing,
+     module.destination_pubsub
+  ]
+}
+##################################
