@@ -110,38 +110,6 @@ module "log_export_billing" {
   include_children       = local.include_children
 }
 
-# module "logs_export_billing" {
-#   ###source = "/home/renatojr/git/lab/project-sink/terraform-example-foundation/1-org/modules/centralized-logging"
-# source  = "terraform-google-modules/log-export/google"
-# version = "~> 7.4"
-
-#   #for_each = local.log_exports
-
-#   destination_uri        = local.destination_uri_map[each.value.type]
-#   #filter                 = each.value.options.logging_sink_filter
-#   filter                 = ""
-#   log_sink_name          = coalesce(each.value.options.logging_sink_name, local.logging_sink_name_map[each.value.type])
-#   parent_resource_id     = each.value.res
-#   parent_resource_type   = var.resource_type
-#   unique_writer_identity = true
-#   include_children       = local.include_children
-
-#   resources                      = local.parent_resources
-#   resource_type                  = local.parent_resource_type
-#   logging_destination_project_id = local.logging_destination_project_id
-
-#   billing_options = {
-#     name                       = "billing_account_sink"
-#     logging_sink_filter        = ""
-#     #log_bucket_id              = "project-sink-1127"
-#     #log_bucket_description     = "Project destination log bucket"
-#     #retention_days             = 33
-#     #location                   = "us-central1"
-#     #linked_dataset_id          = "ds_c_prj_logbkt_analytics"
-#     #linked_dataset_description = "Project destination logbucket BigQuery Dataset for Logbucket analytics"
-#   }
-# }
-
 ########################################################
 
 #-------------------------#
