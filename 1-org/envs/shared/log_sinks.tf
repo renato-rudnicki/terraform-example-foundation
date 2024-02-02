@@ -15,10 +15,8 @@
  */
 
 locals {
-  #parent_resource_id   = local.parent_folder != "" ? local.parent_folder : local.org_id
-  parent_resource_id   = local.parent_folder != "" ? local.parent_folder : local.billing_account != "" ? local.billing_account : local.org_id
-  #parent_resource_type = local.parent_folder != "" ? "folder" : "organization"
-  parent_resource_type = local.parent_folder != "" ? "folder" : local.billing_account != "" ? "billing account" : "organization"
+  parent_resource_id   = local.parent_folder != "" ? local.parent_folder : local.org_id
+  parent_resource_type = local.parent_folder != "" ? "folder" : "organization"
   parent_resources     = { resource = local.parent_resource_id }
   logs_filter          = <<EOF
     logName: /logs/cloudaudit.googleapis.com%2Factivity OR

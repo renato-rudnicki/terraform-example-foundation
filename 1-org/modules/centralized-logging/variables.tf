@@ -26,14 +26,24 @@ variable "resources" {
 
 ###
 variable "resource_type" {
-  description = "Resource type of the resource that will export logs to destination. Must be: project, organization, folder or billing_account."
+  description = "Resource type of the resource that will export logs to destination. Must be: project, organization, or folder."
   type        = string
 
   validation {
-    condition     = contains(["project", "folder", "organization", "billing_account"], var.resource_type)
-    error_message = "The resource_type value must be: project, organization, folder or billing_account."
+    condition     = contains(["project", "folder", "organization"], var.resource_type)
+    error_message = "The resource_type value must be: project, organization, or folder."
   }
 }
+
+# variable "resource_type" {
+#   description = "Resource type of the resource that will export logs to destination. Must be: project, organization, folder or billing_account."
+#   type        = string
+
+#   validation {
+#     condition     = contains(["project", "folder", "organization", "billing_account"], var.resource_type)
+#     error_message = "The resource_type value must be: project, organization, folder or billing_account."
+#   }
+# }
 
 variable "logging_project_key" {
   description = "(Optional) The key of logging destination project if it is inside resources map. It is mandatory when resource_type = project and logging_target_type = logbucket."

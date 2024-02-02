@@ -20,6 +20,7 @@ locals {
   #include_children      = (var.resource_type == "organization" || var.resource_type == "folder")
   include_children = var.resource_type == "organization" || var.resource_type == "folder" || var.resource_type == "billing_account"
 
+
   # Create an intermediate list with all resources X all destinations
   exports_list = flatten([
     # Iterate in all resources
@@ -94,6 +95,19 @@ module "log_export" {
 
 ###################### billing account #################
 
+resource "null_resource" "trigger_log_export_billing" {
+  count = var.billing_account != "" ? 1 : 0
+
+  triggers = {
+    billing_account_id = var.billing_account
+  }
+
+  provisioner "local-exec" {
+    command = "echo Log Export Billing Trigger"
+  }
+}
+
+
 module "log_export_billing" {
   source  = "terraform-google-modules/log-export/google"
   version = "~> 7.4"
@@ -108,6 +122,10 @@ module "log_export_billing" {
   parent_resource_type   = var.resource_type
   unique_writer_identity = true
   include_children       = local.include_children
+
+  depends_on = [
+    null_resource.trigger_log_export_billing,
+  ]
 }
 
 ########################################################
@@ -120,7 +138,7 @@ module "destination_logbucket" {
   version = "~> 7.7"
 
   #count = var.logbucket_options != null ? 1 : 0
-  count = var.logbucket_options != null && var.billing_account != null ? 1 : 0
+  count = var.logbucket_options != null && var.billing_options != null ? 1 : 0
 
 
   project_id                    = var.logging_destination_project_id
