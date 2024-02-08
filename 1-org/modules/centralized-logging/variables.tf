@@ -26,24 +26,14 @@ variable "resources" {
 
 ###
 variable "resource_type" {
-  description = "Resource type of the resource that will export logs to destination. Must be: project, organization, or folder."
+  description = "Resource type of the resource that will export logs to destination. Must be: project, organization, billing_account or folder."
   type        = string
 
   validation {
-    condition     = contains(["project", "folder", "organization"], var.resource_type)
-    error_message = "The resource_type value must be: project, organization, or folder."
+    condition     = contains(["project", "folder", "organization", "billing_account"], var.resource_type)
+    error_message = "The resource_type value must be: project, organization, billing_account or folder."
   }
 }
-
-# variable "resource_type" {
-#   description = "Resource type of the resource that will export logs to destination. Must be: project, organization, folder or billing_account."
-#   type        = string
-
-#   validation {
-#     condition     = contains(["project", "folder", "organization", "billing_account"], var.resource_type)
-#     error_message = "The resource_type value must be: project, organization, folder or billing_account."
-#   }
-# }
 
 variable "logging_project_key" {
   description = "(Optional) The key of logging destination project if it is inside resources map. It is mandatory when resource_type = project and logging_target_type = logbucket."
@@ -145,17 +135,17 @@ EOT
 #----------------------------------- #
 # Billing Account specific variables #
 #----------------------------------- #
-variable "billing_options" {
-  description = <<EOT
-Destination Billing Account options:
-- billing_account: The billing account ID used. 
-- logging_sink_name: The name of the log sink to be created.
-- logging_sink_filter: The filter to apply when exporting logs. Only log entries that match the filter are exported. Default is "" which exports all logs.
-EOT
-  type = object({
-    billing_account            = optional(string, null)
-    logging_sink_name          = optional(string, null)
-    logging_sink_filter        = optional(string, "")
-  })
-  default = null
-}
+# variable "billing_options" {
+#   description = <<EOT
+# Destination Billing Account options:
+# - billing_account: The billing account ID used. 
+# - logging_sink_name: The name of the log sink to be created.
+# - logging_sink_filter: The filter to apply when exporting logs. Only log entries that match the filter are exported. Default is "" which exports all logs.
+# EOT
+#   type = object({
+#     billing_account            = optional(string, null)
+#     logging_sink_name          = optional(string, null)
+#     logging_sink_filter        = optional(string, "")
+#   })
+#   default = null
+# }
