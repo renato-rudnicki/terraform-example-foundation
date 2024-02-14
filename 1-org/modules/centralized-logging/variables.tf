@@ -24,13 +24,14 @@ variable "resources" {
   }
 }
 
+###
 variable "resource_type" {
-  description = "Resource type of the resource that will export logs to destination. Must be: project, organization, or folder."
+  description = "Resource type of the resource that will export logs to destination. Must be: project, organization, billing_account or folder."
   type        = string
 
   validation {
-    condition     = contains(["project", "folder", "organization"], var.resource_type)
-    error_message = "The resource_type value must be: project, organization, or folder."
+    condition     = contains(["project", "folder", "organization", "billing_account"], var.resource_type)
+    error_message = "The resource_type value must be: project, organization, billing_account or folder."
   }
 }
 
@@ -38,6 +39,20 @@ variable "logging_project_key" {
   description = "(Optional) The key of logging destination project if it is inside resources map. It is mandatory when resource_type = project and logging_target_type = logbucket."
   type        = string
   default     = ""
+}
+
+###
+variable "billing_account" {
+  description = "Billing Account ID used in case sinks are under billing account level. Format 000000-000000-000000."
+  type        = string
+  default     = "010ECE-40301B-50DDD5"
+}
+
+###
+variable "enable_billing_account_sink" {
+description = "Verify if billing account will be logged in the sink."
+  type        = bool
+  default     = true
 }
 
 variable "logging_destination_project_id" {
