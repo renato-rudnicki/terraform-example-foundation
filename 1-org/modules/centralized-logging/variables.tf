@@ -41,11 +41,18 @@ variable "logging_project_key" {
   default     = ""
 }
 
-####
+###
 variable "billing_account" {
   description = "Billing Account ID used in case sinks are under billing account level. Format 000000-000000-000000."
   type        = string
-  default     = ""
+  default     = "010ECE-40301B-50DDD5"
+}
+
+###
+variable "enable_billing_account_sink" {
+description = "Verify if billing account will be logged in the sink."
+  type        = bool
+  default     = true
 }
 
 variable "logging_destination_project_id" {
@@ -131,21 +138,3 @@ EOT
   })
   default = null
 }
-
-#----------------------------------- #
-# Billing Account specific variables #
-#----------------------------------- #
-# variable "billing_options" {
-#   description = <<EOT
-# Destination Billing Account options:
-# - billing_account: The billing account ID used. 
-# - logging_sink_name: The name of the log sink to be created.
-# - logging_sink_filter: The filter to apply when exporting logs. Only log entries that match the filter are exported. Default is "" which exports all logs.
-# EOT
-#   type = object({
-#     billing_account            = optional(string, null)
-#     logging_sink_name          = optional(string, null)
-#     logging_sink_filter        = optional(string, "")
-#   })
-#   default = null
-# }
