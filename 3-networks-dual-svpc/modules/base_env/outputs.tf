@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+output "target_name_server_addresses" {
+  value       = var.target_name_server_addresses
+  description = "List of IPv4 address of target name servers for the forwarding zone configuration"
+}
+
+
 /*********************
  Restricted Outputs
 *********************/
@@ -113,3 +119,4 @@ output "base_subnets_secondary_ranges" {
   value       = module.base_shared_vpc.subnets_secondary_ranges
   description = "The secondary ranges associated with these subnets"
 }
+
