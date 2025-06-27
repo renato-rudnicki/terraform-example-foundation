@@ -62,3 +62,8 @@ output "enable_cloudbuild_deploy" {
   description = "Enable infra deployment using Cloud Build."
   value       = local.enable_cloudbuild_deploy
 }
+
+output "artifact_registry_repository_id" {
+  description = "Artifact Registry ID."
+  value       = module.infra_pipelines[0].artifact_registry_repository_id
+}
