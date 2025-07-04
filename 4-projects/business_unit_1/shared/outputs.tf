@@ -62,3 +62,13 @@ output "enable_cloudbuild_deploy" {
   description = "Enable infra deployment using Cloud Build."
   value       = local.enable_cloudbuild_deploy
 }
+
+output "artifact_registry_repository_id" {
+  description = "Artifact Registry ID."
+  value       = local.cloud_builder_artifact_repo
+}
+
+output "bootstrap_cloudbuild_project_id" {
+  description = "Cloudbuild project ID."
+  value       = local.cloudbuild_project_id
+}

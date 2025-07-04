@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+output "confidential_space_project" {
+  description = "Confidential Space project id."
+  value       = module.env.confidential_space_project
+}
+
+output "confidential_space_project_number" {
+  description = "Confidential Space project number."
+  value       = module.env.confidential_space_project_number
+}
+
 output "floating_project" {
   description = "Project sample floating project."
   value       = module.env.floating_project
@@ -94,3 +104,7 @@ output "default_region" {
   value       = local.default_region
 }
 
+output "bootstrap_cloudbuild_project_id" {
+  description = "Cloudbuild project ID."
+  value       = local.cloudbuild_project_id
+}
